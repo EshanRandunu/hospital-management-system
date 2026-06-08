@@ -20,7 +20,7 @@ services:
     ports:
       - "8083:8083"
     environment:
-      SPRING_DATA_MONGODB_URI: ${mongoDB url}
+      SPRING_DATA_MONGODB_URI:${mongoDB url}
       SERVICES_AUTH_URL: http://host.docker.internal:8081
       SERVICES_PATIENT_URL: http://host.docker.internal:8086
       SERVICES_APPOINTMENT_URL: http://host.docker.internal:8084
