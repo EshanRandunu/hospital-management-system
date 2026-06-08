@@ -1,0 +1,108 @@
+package com.medilink.patient_service.service;
+
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
+import com.medilink.patient_service.model.MedicalRecord;
+import com.medilink.patient_service.model.PatientProfile;
+import com.medilink.patient_service.repository.PatientRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+import java.io.IOException;
+import java.util.List;
+import java.util.Date;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+
+/**
+ * PatientService handles the core business logic: patient management and file uploads.
+ */
+@Service
+public class PatientService {
+
+    @Autowired
+    private PatientRepository patientRepository;
+
+    @Autowired
+    private Cloudinary cloudinary;
+
+
+    /**
+     * Retrieves all patient profiles.
+     */
+    public List<PatientProfile> findAll() {
+        return patientRepository.findAll();
+    }
+
+    /**
+     * Finds a patient by their ID.
+     */
+    public Optional<PatientProfile> findById(String id) {
+        return patientRepository.findById(id);
+    }
+
+    /**
+     * Finds a patient by their NIC (National ID Card).
+     */
+    public Optional<PatientProfile> findByNIC(String NIC) {
+        return patientRepository.findByNIC(NIC);
+    }
+
+    /**
+     * Finds a patient by auth user ID.
+     */
+    public Optional<PatientProfile> findByAuthUserId(String authUserId) {
+        return patientRepository.findByAuthUserId(authUserId);
+    }
+
+    /**
+     * Creates or updates a patient profile.
+     */
+    public PatientProfile saveProfile(PatientProfile profile) {
+        return patientRepository.save(profile);
+    }
+
+    /**
+     * Deletes a patient profile.
+     */
+    public void deleteProfile(String id) {
+        patientRepository.deleteById(id);
+    }
+
+    /**
+     * Upload medical report to Cloudinary and update patient record.
+     */
+    public PatientProfile uploadReport(String patientId, String title, MultipartFile file) throws IOException {
+        // Upload the file to Cloudinary with specific tags or folders
+        Map<String, Object> uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.asMap(
+                "resource_type", "auto",
+                "folder", "medilink/reports/" + patientId,
+                "access_mode", "public"
+        ));
+
+        // Create MedicalRecord metadata with Cloudinary URL
+        MedicalRecord record = new MedicalRecord();
+        record.setRecordId(UUID.randomUUID().toString());
+        record.setTitle(title);
+        record.setFileUrl((String) uploadResult.get("url"));
+        record.setFileType(file.getContentType());
+        record.setUploadDate(new Date());
+
+        // Update the patient's record list in MongoDB
+        PatientProfile patient = findById(patientId).orElseThrow(() -> new RuntimeException("Patient not found"));
+        patient.getMedicalReports().add(record);
+        return patientRepository.save(patient);
+    }
+
+    /**
+     * Delete a medical report by record ID.
+     */
+    public void deleteMedicalReport(String patientId, String recordId) {
+        PatientProfile patient = findById(patientId).orElseThrow(() -> new RuntimeException("Patient not found"));
+        patient.getMedicalReports().removeIf(report -> report.getRecordId().equals(recordId));
+        patientRepository.save(patient);
+    }
+
+
+}

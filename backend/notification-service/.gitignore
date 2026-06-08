@@ -1,0 +1,11 @@
+# Ignore environment files
+.env
+
+# Ignore application properties
+application.properties
+*.properties
+!application-template.properties
+
+# Ignore logs
+logs/
+*.log
