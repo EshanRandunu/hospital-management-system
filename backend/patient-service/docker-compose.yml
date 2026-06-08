@@ -21,8 +21,7 @@ services:
     depends_on:
       - mongo-patient
     environment:
-      SPRING_DATA_MONGODB_URI: mongodb://admin:admin123@mongo-patient:27017/patient_db?authSource=admin
-      SERVER_PORT: 8086
+      SPRING_DATA_MONGODB_URI: ${mongoDB url}
     networks:
       - healthcare-network
 
