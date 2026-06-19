@@ -1,4 +1,4 @@
-# 🏥 MediLink - AI-Enabled Smart Healthcare Appointment & Telemedicine Platform
+# 🏥 MediLink - Smart Healthcare Appointment & Telemedicine Platform
 
 A cloud-native healthcare management platform developed for the **SE3020 - Distributed Systems** module. The system follows a **Microservices Architecture** and enables patients, doctors, and administrators to manage healthcare services efficiently through a secure web application.
 
@@ -284,18 +284,6 @@ DELETE /appointments/{id}
 ✔ Docker Containerization
 
 ✔ Responsive React Frontend
-
----
-
-## 🚧 Features Not Implemented
-
-The following features mentioned in the assignment specification were not implemented in this version:
-
-- Video Consultation Integration
-- Online Payment Gateway
-- SMS Notifications
-- Email Notifications
-- AI Symptom Checker
 
 ---
 
